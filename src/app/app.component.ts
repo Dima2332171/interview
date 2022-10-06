@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {CurrencyApiService} from "./currency-api.service";
+import {CurrencyApiService} from "./services/currency-api.service";
 
 @Component({
   selector: 'app-root',

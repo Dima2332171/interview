@@ -9,7 +9,7 @@ export class CurrencyApiService {
   constructor(private http:HttpClient) { }
 
   getCurrencyData(valuta:string){
-    let url = `https://api.exchangerate.host/latest?base=${valuta}`
+    let url = `https://api.exchangerate.host/latest?base=${valuta}`;
     return this.http.get(url);
   }
 }

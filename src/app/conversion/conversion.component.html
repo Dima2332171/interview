@@ -1,28 +1,30 @@
 <main>
   <div class="main-container">
-    <div class="selection-container">
-      <div>
-        <select #c1 name="value1" class="form-select" id="currency1" (mouseleave)="changeBase1(c1.value)">
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
-          <option value="UAH">UAH</option>
-        </select>
-      </div>
-      <p>to</p>
-      <div>
-        <select #c2 name="value2" class="form-select" id="currency2" (mouseleave)="changeBase2(c2.value)">
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
-          <option value="UAH">UAH</option>
-        </select>
-      </div>
+    <div class="form-container">
+      <form [formGroup]="currencyForm">
+        <div class="selection-container">
+          <div>
+            <select #c1 name="value1" class="form-select" id="currency1" formControlName="base1">
+              <option *ngFor="let optionValue of optionValues">{{optionValue}}</option>
+            </select>
+          </div>
+          <p>to</p>
+          <div>
+            <select #c2 name="value2" class="form-select" id="currency2" formControlName="base2">
+              <option *ngFor="let optionValue of optionValues">{{optionValue}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="inputBox">
+          <input type="number" formControlName="inputValue">
+          <span *ngIf="inputValue && inputValue.invalid && inputValue.touched">This input filed is not valid</span>
+        </div>
+      </form>
     </div>
-    <div>
-      <input type="number" [formControl]="numberControl">
-    </div>
+
     <button class="btn btn-secondary" on-click="convert()">Submit</button>
-    <div class="result-container" *ngIf="check">
-      <div>{{inputCurrency|number:'1.1-2'}} {{base1}} = {{result|number:'1.1-2'}} {{base2}}</div>
+    <div class="result-container" *ngIf="inputValue && inputValue.valid&&check">
+      <div>{{inputCurrency|number:'1.1-2'}} {{currencyForm.value['base1']}} = {{result|number:'1.1-2'}} {{currencyForm.value['base2']}}</div>
     </div>
   </div>
 </main>

@@ -1,53 +1,51 @@
-import { Component} from '@angular/core';
-import {CurrencyApiService} from "../currency-api.service";
-import {FormControl} from '@angular/forms';
+import { Component,OnInit} from '@angular/core';
+import {CurrencyApiService} from "../services/currency-api.service";
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {api} from "../api";
 
 @Component({
   selector: 'app-conversion',
   templateUrl: './conversion.component.html',
   styleUrls: ['./conversion.component.css']
 })
-export class ConversionComponent{
+export class ConversionComponent implements OnInit{
 
-  numberControl:FormControl;
-
-  base1:string = 'USD';
-  base2:string = 'USD';
+  currencyForm: FormGroup;
+  optionValues:string[] = ['USD','EUR','UAH'];
   result:number = 1;
-  input:string = '1';
   check:boolean = false;
+  currencyType:string = '';
+    inputCurrency:number = 1;
 
-  inputCurrency:number = 1;
-  changeBase1(currency1:string){
-    this.base1 = currency1;
+  constructor(private currency: CurrencyApiService, private fb:FormBuilder) {  }
+
+  ngOnInit(){
+    this.initForm();
   }
-  changeBase2(currency2:string){
-    this.base2 = currency2;
-  }
-  constructor(private currancy: CurrencyApiService) {
-    this.numberControl = new FormControl('1');
-    this.numberControl.valueChanges.subscribe((value)=>{
-      return value;
+
+
+  private initForm():void{
+    this.currencyForm = this.fb.group({
+      base1:'USD',
+      base2:'USD',
+      inputValue:[1,[Validators.required]],
     })
-  }
-  currJson:any= [];
+}
+  currJson:api;
+  currJsonString:string= '';
+
   convert():void{
     this.check = true;
-    this.inputCurrency = this.numberControl.value;
-    this.currancy.getCurrencyData(this.base1).subscribe(data=>{
-      this.currJson = JSON.stringify(data);
-      this.currJson = JSON.parse(this.currJson);
-      if(this.base2==='USD'){
-        this.result = this.currJson.rates.USD*this.numberControl.value;
-      }
-      if(this.base2==='UAH'){
-        this.result = this.currJson.rates.UAH*this.numberControl.value;
-
-      }
-      if(this.base2==='EUR'){
-        this.result = this.currJson.rates.EUR*this.numberControl.value;
-
-      }
+    this.inputCurrency = this.currencyForm.value.inputValue;
+    this.currency.getCurrencyData(this.currencyForm.value.base1).subscribe(data=>{
+      this.currJsonString = JSON.stringify(data);
+      this.currJson = JSON.parse(this.currJsonString);
+      this.currencyType = this.currencyForm.value.base2;
+      this.result = this.currJson.rates[this.currencyType]*this.inputCurrency;
     })
+  }
+
+  get inputValue(){
+    return this.currencyForm.get('inputValue')
   }
 }
